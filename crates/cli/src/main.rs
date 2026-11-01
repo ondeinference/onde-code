@@ -94,7 +94,7 @@ async fn run() -> anyhow::Result<()> {
         }
         cli::init_logging();
         legacy::migrate_sessions(&INFO.env);
-        ed_acp::serve_stdio(Arc::new(OndeCode), opts).await?;
+        ed_acp::serve_stdio(Arc::new(OndeCode::new()), opts).await?;
     } else {
         let llm = LlmConfig::from_env(&INFO.env);
         if llm.api_key.is_none() {
