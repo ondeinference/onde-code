@@ -20,7 +20,7 @@
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kelvin-soen/OndeCode.git"
+    "url": "git+https://github.com/ondeinference/onde-code.git"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",

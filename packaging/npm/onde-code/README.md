@@ -19,9 +19,9 @@ npx @ondeinference/onde-code --acp
 ## Links
 
 - [Homepage](https://ondeinference.com)
-- [Source code](https://github.com/kelvin-soen/OndeCode)
-- [Issues](https://github.com/kelvin-soen/OndeCode/issues)
+- [Source code](https://github.com/ondeinference/onde-code)
+- [Issues](https://github.com/ondeinference/onde-code/issues)
 
 ## License
 
-[Apache-2.0](https://github.com/kelvin-soen/OndeCode/blob/main/LICENSE)
+[Apache-2.0](https://github.com/ondeinference/onde-code/blob/main/LICENSE)
