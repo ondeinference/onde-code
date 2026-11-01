@@ -123,6 +123,16 @@ fn build_flow(web: &str, token_url: &str, listener: TcpListener) -> Flow {
 
 /// Hand the authorize URL to the platform's browser. Best-effort: a headless box has nothing to
 /// open, which is not a reason to abandon the flow, since the URL can be carried elsewhere.
+///
+/// iOS and Android have no `open` or `xdg-open` to shell out to; a host there opens the page
+/// itself (ed-acp-tauri does, through URL elicitation), so this reports that nothing was opened.
+#[cfg(any(target_os = "ios", target_os = "android"))]
+pub fn open_browser(_url: &str) -> bool {
+    false
+}
+
+/// See the mobile variant above.
+#[cfg(not(any(target_os = "ios", target_os = "android")))]
 pub fn open_browser(url: &str) -> bool {
     #[cfg(target_os = "macos")]
     let mut command = {

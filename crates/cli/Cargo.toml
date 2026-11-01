@@ -19,6 +19,7 @@ path = "src/bin/fake_mcp_server.rs"
 [dependencies]
 ed-acp.workspace = true
 ed-acp-tui.workspace = true
+onde-code-agent.workspace = true
 agent-client-protocol.workspace = true
 anyhow.workspace = true
 async-trait.workspace = true
