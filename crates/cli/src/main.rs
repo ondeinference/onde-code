@@ -7,10 +7,7 @@
 //! OPENAI_BASE_URL, OPENAI_API_KEY and OPENAI_MODEL for any OpenAI API compatible endpoint.
 //! Set ONDE_CODE_YOLO=1 to skip permission prompts. Logs go to stderr (RUST_LOG).
 
-mod auth;
-mod browser_auth;
 mod legacy;
-mod profile;
 
 use std::io::IsTerminal;
 use std::path::PathBuf;
@@ -19,7 +16,7 @@ use std::sync::Arc;
 use ed_acp::{LlmConfig, ServeOptions, cli};
 use ed_acp_tui::TuiConfig;
 
-use profile::{INFO, OndeCode};
+use onde_code_agent::{INFO, OndeCode, auth};
 
 const USAGE: &str = "\
 Usage: onde-code [--acp] [--yolo] [--list-models] [--root <path>...] [--login] [--setup] [--version]
