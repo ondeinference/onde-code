@@ -3,11 +3,10 @@ name: Code Release npm
 # Publishes @ondeinference/onde-code and its five platform packages on the same v* tag that
 # release-github.yml builds from.
 #
-# Auth is npm Trusted Publishing (OIDC): once a package exists, add a Trusted Publisher for it on
-# npmjs.com pointing at this workflow, and no token is involved. A Trusted Publisher can only be
-# attached to a package that already exists, so the very first release publishes with the NPM_TOKEN
-# secret instead (NODE_AUTH_TOKEN below). After every package has a Trusted Publisher, delete the
-# secret.
+# Auth is npm Trusted Publishing (OIDC), so no token is involved. Each of the six packages
+# (@ondeinference/onde-code and its five platform packages) has a Trusted Publisher on npmjs.com
+# pointing at this workflow. A package added later needs the same setup before its first CI
+# publish. OIDC needs npm >= 11.5.1 and Node >= 22.14.0 (.nvmrc pins 22).
 
 on:
   push:
@@ -92,7 +91,7 @@ jobs:
         shell: pwsh
         run: ./packaging/windows/check-static-crt.ps1 -Path target/${{ matrix.target }}/release/onde-code.exe
 
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@v6
         with:
           node-version-file: .nvmrc
           registry-url: "https://registry.npmjs.org"
@@ -102,10 +101,10 @@ jobs:
         shell: bash
         run: npm install -g npm@latest
 
+      # Authentication is OIDC: each @ondeinference/onde-code* package has a Trusted Publisher
+      # pointing at this workflow, so there is no token to leak.
       - name: Publish platform package to npm
         shell: bash
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           cd packaging/npm
 
@@ -155,7 +154,7 @@ jobs:
           tag="${{ github.event.inputs.tag || github.ref_name }}"
           echo "RELEASE_VERSION=${tag#v}" >> "$GITHUB_ENV"
 
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@v6
         with:
           node-version-file: .nvmrc
           registry-url: "https://registry.npmjs.org"
@@ -164,10 +163,10 @@ jobs:
         shell: bash
         run: npm install -g npm@latest
 
+      # Authentication is OIDC: each @ondeinference/onde-code* package has a Trusted Publisher
+      # pointing at this workflow, so there is no token to leak.
       - name: Publish base package to npm
         shell: bash
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           cd packaging/npm/onde-code
 

@@ -85,10 +85,11 @@ After both workflows finish, confirm the npm package:
 npm view @ondeinference/onde-code version
 ```
 
-A package's first publish needs the `NPM_TOKEN` repo secret, because a Trusted
-Publisher can only be attached to a package that already exists. Afterwards add
-a Trusted Publisher (workflow `release-npm.yml`) on npmjs.com for each of the
-six packages.
+A new package needs a Trusted Publisher before its first CI publish. Run
+`packaging/npm/scripts/setup-trusted-publishing.sh` (as an `@ondeinference` org
+member, logged in with `npm login`). It publishes a `0.0.0` placeholder if the
+package does not exist, then attaches the `release-npm.yml` publisher, and skips
+packages that already have it. Add `--dry-run` to preview.
 
 ## 7. If the release workflow fails
 
