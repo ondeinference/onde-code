@@ -45,14 +45,15 @@ What the registry checks, and where this repo covers it:
 1. Tag the release on `main` (the tag must match `version` in `Cargo.toml`) and push it:
 
    ```sh
-   git tag v1.1.0 origin/main && git push origin v1.1.0
+   VERSION=1.1.1
+   git tag v$VERSION origin/main && git push origin v$VERSION
    ```
 
 2. Wait for the `release` and `Code Release npm` workflows to finish, then point `agent.json` at
    the release:
 
    ```sh
-   packaging/registry/update-agent.sh v1.1.0
+   packaging/registry/update-agent.sh v$VERSION
    ```
 
    It downloads the five archives, hashes them, and writes the version, the npx package version,
@@ -61,7 +62,7 @@ What the registry checks, and where this repo covers it:
 3. In your fork of the registry, branch off `upstream/main`, copy the files and validate:
 
    ```sh
-   git checkout -b add-onde-code-v1.1.0 upstream/main
+   git checkout -b add-onde-code-v$VERSION upstream/main
    cp ../onde-code/packaging/registry/agent.json onde-code/agent.json
    cp ../onde-code/assets/icon.svg onde-code/icon.svg
    uv run --with jsonschema .github/workflows/build_registry.py --dry-run
