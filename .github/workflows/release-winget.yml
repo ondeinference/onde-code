@@ -35,7 +35,7 @@ permissions:
   contents: read
 
 env:
-  REPO: kelvin-soen/OndeCode
+  REPO: ondeinference/onde-code
   PACKAGE_IDENTIFIER: OndeInference.OndeCode
 
 jobs:

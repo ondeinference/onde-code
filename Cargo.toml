@@ -6,7 +6,7 @@ members = ["crates/agent", "crates/cli"]
 version = "1.1.0"
 edition = "2024"
 license = "Apache-2.0"
-repository = "https://github.com/kelvin-soen/OndeCode"
+repository = "https://github.com/ondeinference/onde-code"
 homepage = "https://ondeinference.com"
 
 [workspace.dependencies]

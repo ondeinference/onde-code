@@ -6,6 +6,9 @@ description = "Onde Code as an embeddable ed-acp agent: the Profile, its Onde si
 license.workspace = true
 repository.workspace = true
 homepage.workspace = true
+readme = "README.md"
+keywords = ["acp", "coding-agent", "fine-tuning", "llm", "onde"]
+categories = ["development-tools"]
 
 [dependencies]
 ed-acp.workspace = true
