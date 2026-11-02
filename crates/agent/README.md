@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/ondeinference/onde/refs/heads/development/assets/onde-inference-logo.svg" alt="Onde Inference" width="96">
+  <img src="https://raw.githubusercontent.com/ondeinference/onde/refs/heads/main/assets/onde-inference-logo.svg" alt="Onde Inference" width="96">
 </p>
 
 <h1 align="center">onde-code-agent</h1>
