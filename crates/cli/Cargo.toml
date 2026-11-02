@@ -2,11 +2,13 @@
 name = "onde-code"
 version.workspace = true
 edition.workspace = true
-description = "Onde Code is Onde Inference's ACP-compatible coding agent for model fine-tuning and deployment."
+description = "Coding agent for fine-tuning, managing and deploying models on Onde Inference."
 license.workspace = true
 repository.workspace = true
 homepage.workspace = true
 readme = "../../README.md"
+keywords = ["acp", "coding-agent", "fine-tuning", "llm", "onde"]
+categories = ["command-line-utilities", "development-tools"]
 
 [[bin]]
 name = "onde-code"

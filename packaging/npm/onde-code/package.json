@@ -16,7 +16,7 @@
     "lib",
     "README.md"
   ],
-  "description": "Onde Code is Onde Inference's ACP-compatible coding agent for model fine-tuning and deployment.",
+  "description": "Coding agent for fine-tuning, managing and deploying models on Onde Inference.",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",

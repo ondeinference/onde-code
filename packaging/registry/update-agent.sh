@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
-# Point packaging/registry/agent.json at a published release: set the version, the archive URLs and the
-# sha256 of each archive. The archives are downloaded and hashed here rather than trusting
+# Point packaging/registry/agent.json at a published release: set the version, the npx package
+# version, the archive URLs and the sha256 of each archive. The archives are downloaded and hashed here rather than trusting
 # checksums.txt, which releases before v1.0.0 don't have.
 #
 #   packaging/registry/update-agent.sh v1.0.0
 set -euo pipefail
 
 tag=${1:?usage: packaging/registry/update-agent.sh <tag, e.g. v1.0.0>}
-repo=kelvin-soen/OndeCode
+repo=ondeinference/onde-code
 here=$(cd "$(dirname "$0")" && pwd)
 dist=$(mktemp -d)
 trap 'rm -rf "$dist"' EXIT
@@ -23,7 +23,8 @@ platforms=(
   "windows-x86_64 onde-code-windows-x64.zip"
 )
 
-json=$(jq --arg v "${tag#v}" '.version = $v' "$here/agent.json")
+json=$(jq --arg v "${tag#v}" \
+  '.version = $v | .distribution.npx.package = "@ondeinference/onde-code@" + $v' "$here/agent.json")
 for entry in "${platforms[@]}"; do
   read -r platform archive <<<"$entry"
   [ -f "$dist/$archive" ] || { echo "missing $archive in $tag" >&2; exit 1; }

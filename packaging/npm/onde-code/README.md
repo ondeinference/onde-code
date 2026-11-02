@@ -1,6 +1,8 @@
 # Onde Code
 
-Onde Code is Onde Inference's ACP-compatible coding agent for model fine-tuning and deployment.
+Fine-tune, manage and deploy models without leaving your editor.
+
+Onde Code is a coding agent for your model work on [Onde Inference](https://ondeinference.com). It writes and runs the fine-tuning, model management and deploy code in your repo, and it works in any [Agent Client Protocol](https://agentclientprotocol.com) (ACP) editor or in the terminal. It is free and Apache-2.0. Get an app key at [ondeinference.com](https://ondeinference.com).
 
 ## Install
 

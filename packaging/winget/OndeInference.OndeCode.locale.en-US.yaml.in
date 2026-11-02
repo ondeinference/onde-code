@@ -9,12 +9,12 @@ PackageName: Onde Code
 PackageUrl: https://github.com/@REPO@
 License: Apache-2.0
 LicenseUrl: https://github.com/@REPO@/blob/main/LICENSE
-ShortDescription: Onde Code is Onde Inference's ACP-compatible coding agent for model fine-tuning and deployment.
+ShortDescription: Coding agent for fine-tuning, managing and deploying models on Onde Inference.
 Description: |-
-  Onde Code is an ACP-compatible local-first AI coding agent backed by Onde Inference.
-  It runs LLM inference on-device via GGUF models or against any OpenAI-compatible
-  endpoint, and integrates with editors such as Zed and VS Code via the Agent Client
-  Protocol (ACP).
+  Onde Code is a coding agent for your model work on Onde Inference. It writes and runs the
+  fine-tuning, model management and deploy code in your repo, and it works in any Agent Client
+  Protocol (ACP) editor, such as Zed, or in the terminal. It uses Onde Inference by default and
+  also accepts any OpenAI API compatible endpoint.
 Moniker: onde-code
 Tags:
   - ai

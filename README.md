@@ -1,46 +1,46 @@
-# Onde Code
+<p align="center">
+  <img src="https://raw.githubusercontent.com/ondeinference/onde/refs/heads/development/assets/onde-inference-logo.svg" alt="Onde Inference" width="96">
+</p>
 
-Onde Code is Onde Inference's ACP-compatible coding agent for model fine-tuning and deployment.
+<h1 align="center">Onde Code</h1>
 
-It speaks the [Agent Client Protocol](https://agentclientprotocol.com) (ACP), so it runs inside any
-ACP editor (Zed, JetBrains, Xcode, Neovim and others), and it has its own TUI for the terminal. It is
-written in Rust on the official [ACP Rust SDK](https://github.com/agentclientprotocol/rust-sdk).
-Inference comes from [Onde Inference](https://ondeinference.com) by default, and the agent also
-accepts any OpenAI API compatible endpoint.
+<p align="center">
+  Fine-tune, manage and deploy models without leaving your editor.
+</p>
 
-It is one static binary with no runtime to install. It implements ACP v1, including the optional
-parts editors actually use: session list/resume/close/delete, multi-root workspaces, MCP servers,
-config options and slash commands. The [conformance audit](https://github.com/kelvin-soen/OndeCode/issues/25)
-lists every spec page and where each requirement is handled.
+<p align="center">
+  <a href="https://ondeinference.com"><img src="https://img.shields.io/badge/ondeinference.com-235843?style=flat-square&labelColor=17211D" alt="Website"></a>
+  <a href="https://www.npmjs.com/package/@ondeinference/onde-code"><img src="https://img.shields.io/npm/v/@ondeinference/onde-code?style=flat-square&labelColor=17211D&color=235843" alt="npm"></a>
+  <a href="https://crates.io/crates/onde-code"><img src="https://img.shields.io/crates/v/onde-code?style=flat-square&labelColor=17211D&color=235843" alt="Crates.io"></a>
+  <a href="https://github.com/ondeinference/onde-code/releases"><img src="https://img.shields.io/github/v/release/ondeinference/onde-code?style=flat-square&labelColor=17211D&color=235843" alt="Release"></a>
+  <a href="https://github.com/ondeinference/onde-code/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/ondeinference/onde-code/ci.yml?style=flat-square&labelColor=17211D&color=235843&label=CI" alt="CI"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-235843?style=flat-square&labelColor=17211D" alt="License"></a>
+</p>
+
+<p align="center">
+  <a href="https://github.com/ondeinference/onde-swift">Swift</a> · <a href="https://pub.dev/packages/onde_inference">Flutter</a> · <a href="https://www.npmjs.com/package/@ondeinference/react-native">React Native</a> · <a href="https://crates.io/crates/onde">Rust</a> · <a href="https://ondeinference.com">Website</a>
+</p>
+
+---
+
+Onde Code is a coding agent for your model work on [Onde Inference](https://ondeinference.com). It
+writes and runs the fine-tuning, model management and deploy code in your repo, and it works in any
+[Agent Client Protocol](https://agentclientprotocol.com) (ACP) editor or in the terminal. It is free
+and Apache-2.0. Onde Inference is the hosted side: get an app key at
+[ondeinference.com](https://ondeinference.com).
+
+It is one static binary written in Rust, and it also accepts any OpenAI API compatible endpoint.
 
 ## Install
 
-Prebuilt binaries for macOS (arm64, x64), Linux (arm64, x64) and Windows (x64) are attached to
-each [GitHub release](https://github.com/kelvin-soen/OndeCode/releases), along with a
-`checksums.txt`:
-
 ```sh
-curl -LO https://github.com/kelvin-soen/OndeCode/releases/latest/download/onde-code-darwin-arm64.tar.gz
-tar -xzf onde-code-darwin-arm64.tar.gz && mv onde-code ~/.local/bin/
+npm install -g @ondeinference/onde-code    # pulls in the binary for your platform
+npx @ondeinference/onde-code --acp         # or run it without installing, from an editor
 ```
 
-Or install from npm, which pulls in the right binary for your platform:
-
-```sh
-npm install -g @ondeinference/onde-code
-```
-
-Editors can run it without a global install: `npx @ondeinference/onde-code --acp`.
-
-Or build from source (Rust 1.88 or newer):
-
-```sh
-cargo build --release   # -> target/release/onde-code
-```
-
-A listing in the [ACP registry](https://agentclientprotocol.com/get-started/registry) is in review
-([agentclientprotocol/registry#652](https://github.com/agentclientprotocol/registry/pull/652)).
-Once it lands, editors that read the registry can install onde-code without the steps above.
+Prebuilt archives for macOS, Linux and Windows are on the
+[releases page](https://github.com/ondeinference/onde-code/releases). Building from source and the
+ACP registry are covered in [docs/install.md](docs/install.md).
 
 ## Quick start
 
@@ -50,168 +50,34 @@ cd my-project
 onde-code                # terminal UI
 ```
 
-`--login` opens ondeinference.com. You sign in, pick an org and an app (or create one), and press
-Connect. The app key goes back to the agent through a one-time code and PKCE, so it never appears
-in a URL. It prints the URL too, for ssh and headless machines. Prefer to paste a key, or use another
-OpenAI API compatible endpoint? Run `onde-code --setup` instead (the key is checked live, then stored).
+`--login` opens ondeinference.com, and the app key comes back to the agent without appearing in a
+URL. Prefer to paste a key? Run `onde-code --setup`.
 
-Both store the key in the platform config dir: `~/Library/Application Support/ondecode/env`
-on macOS, `~/.config/ondecode/env` on Linux, `%APPDATA%\ondecode\env` on Windows. A variable set
-in the environment wins over the same one in that file, so CI and editor configs can pass a key
-directly.
+## Use it your way
 
-## Use it in an editor
+- **In an editor:** Zed, Android Studio and other JetBrains IDEs, Xcode, marimo, Neovim and other ACP clients run `onde-code --acp`.
+  See [docs/editors.md](docs/editors.md).
+- **In the terminal:** `onde-code` opens a chat UI that asks before every edit and command. See
+  [docs/terminal.md](docs/terminal.md).
+- **Embedded in your app:** the [`onde-code-agent`](crates/agent) crate serves the agent in
+  process, for hosts that can't launch a subprocess.
+- **For model operations:** pass [`onde --mcp`](docs/models.md) to the agent as an MCP server, and
+  it can list, register and assign models on your Onde Inference account.
 
-Editors launch the agent with piped stdio, which switches it to ACP mode (`--acp` forces it). In
-Zed, add it to `settings.json`:
+## Docs
 
-```json
-{
-  "agent_servers": {
-    "Onde Code": {
-      "type": "custom",
-      "command": "/absolute/path/to/onde-code",
-      "args": ["--acp"],
-      "env": {
-        "ONDE_API_KEY": "APP_ID:APP_SECRET"
-      }
-    }
-  }
-}
-```
+The [docs index](docs/README.md) covers install, editors, what the agent does, the terminal UI,
+model workflows, providers and configuration, and development.
 
-The agent offers a **Sign in with Onde** method, which opens ondeinference.com in your browser (as a
-URL prompt when the editor supports it). A key that already works, from the environment or the stored
-file, passes without opening anything. Until one exists the agent answers `session/new`, `session/load`, `session/resume` and `session/prompt` with
-`AUTH_REQUIRED`. Once you have signed in (or `--setup` succeeds), the running agent picks up the
-stored key, so the open thread comes back without restarting anything. Logging out from the editor
-deletes the stored key and the saved sign-in (`session.json`).
+## Contributing
 
-In the editor you get:
-
-- a model picker, filled from the endpoint's `GET /models` (or `ONDE_CODE_MODELS`)
-- an "Auto-approve actions" toggle, in editors that support boolean config options
-- `/models` and `/setup` slash commands, answered locally without a model call
-- a thread history: sessions can be listed, resumed, loaded (with full replay), closed and
-  deleted. Sessions are saved to disk, so threads reopen with their history after the editor
-  or the agent restarts. Permission choices ("always allow", auto-approve) are not saved.
-
-## Use it in the terminal
-
-```sh
-onde-code                       # asks before every edit and command
-onde-code --yolo                # approves everything
-onde-code --root ../shared-lib  # add another workspace root (repeatable)
-```
-
-Enter sends, Esc cancels a running turn, ↑/↓ and PgUp/PgDn scroll, Ctrl-C or `/quit` exits.
-Permission prompts take `y` (allow), `a` (always allow this tool) or `n` (reject).
-
-The TUI is an ACP client itself. It starts `onde-code --acp` as a subprocess and speaks the same
-protocol an editor does, so the terminal and the editor exercise the same code paths.
-
-## What the agent does
-
-- **Tools:** `read_file`, `write_file`, `edit_file`, `list_directory` and `run_command`. Every
-  tool takes an optional `root`, so the model can work across all roots of a multi-root
-  workspace. Each call is reported with its name, kind, absolute locations, diff, raw input and
-  output, and status.
-- **Editor routing:** file reads and writes go through the client's `fs/*` methods when it
-  advertises them, so the agent sees unsaved buffers. Commands run in the client's `terminal/*`
-  when available, otherwise in a local `sh -c` (on Windows, `sh` has to be on `PATH`, for
-  example from Git for Windows). Commands time out after `ONDE_CODE_COMMAND_TIMEOUT_SECS`.
-- **Permissions:** writes and commands ask through `session/request_permission` with allow once,
-  always allow, reject once and always reject. `--yolo`, `ONDE_CODE_YOLO=1` or the auto-approve
-  toggle skip the prompt.
-- **MCP:** MCP servers passed in `session/new`, `session/load` or `session/resume`, over stdio
-  or streamable HTTP, are connected per session, and their tools are offered to the model as `mcp__<server>__<tool>`. A
-  server that fails to start is logged and skipped; the session still opens.
-- **Prompts:** text, images (sent to the model as vision input), embedded resources and
-  `resource_link`s. `file://` links are read (through the client's
-  `fs/read_text_file` when advertised) and inlined. A link to a selection (`#L10:20`, as Zed
-  sends for selected text and symbols) inlines just those lines.
-- **Streaming:** answer text and reasoning (`reasoning_content` / `reasoning` deltas) stream as
-  message and thought chunks with stable message ids, plus a `usage_update` after each model call.
-- **Cancellation:** `session/cancel` stops the turn with `cancelled`, drops any open permission
-  prompt, and cancels in-flight `fs/*` and `terminal/*` requests to the client.
-
-A turn ends after 50 model calls with `max_turn_requests`. The agent doesn't send `plan` updates:
-chat completion models don't produce plans reliably enough to report as structured steps.
-
-## Providers
-
-Onde Code uses Onde Inference by default. Set `ONDE_API_KEY` to the `app-id:app-secret` pair from
-the Onde dashboard (or store it with `--setup`). The agent then talks to
-`https://cloud.ondeinference.com/v1` and uses `onde-kkk` unless `OPENAI_MODEL` names another model;
-`onde-code --list-models` prints the ids your key can use.
-
-It also accepts any OpenAI API compatible endpoint. Point it there with `OPENAI_BASE_URL`,
-`OPENAI_API_KEY` and `OPENAI_MODEL`, or pick that option in `--setup`. The model has to support
-tool (function) calling.
-
-Onde Inference wins: whenever `ONDE_API_KEY` is set, the agent uses it with the Onde Inference
-URL and ignores `OPENAI_API_KEY` and `OPENAI_BASE_URL`. `ONDE_CODE_MODEL` (or `OPENAI_MODEL`)
-still picks the model. To point it at a local or staging Onde Inference deployment, set
-`ONDE_BASE_URL`.
-To use another endpoint while `ONDE_API_KEY` is set, set `ONDE_CODE_PROVIDER=openai`.
-
-```sh
-ONDE_API_KEY=APP_ID:APP_SECRET onde-code
-OPENAI_BASE_URL=https://your-endpoint/v1 OPENAI_API_KEY=... OPENAI_MODEL=your-model onde-code
-onde-code --list-models     # what the configured endpoint serves
-```
-
-## Configuration
-
-| Env var | Default | |
-|---------|---------|---|
-| `ONDE_CODE_PROVIDER` | detected from keys | `onde`, or `openai` for any OpenAI API compatible endpoint |
-| `ONDE_API_KEY` | unset | Onde Inference `app-id:app-secret`; selects Onde Inference |
-| `ONDE_WEB_URL` | `https://ondeinference.com` | where `--login` and "Sign in with Onde" send the browser, for a local or staging site |
-| `ONDE_BASE_URL` | `https://cloud.ondeinference.com/v1` | Onde Inference base URL, for a local or staging deployment |
-| `OPENAI_BASE_URL` | `https://api.openai.com/v1` | base URL of an OpenAI API compatible endpoint |
-| `OPENAI_API_KEY` | unset | bearer token for that endpoint |
-| `ONDE_CODE_MODEL` | `OPENAI_MODEL` | model id for either provider; must support tool calling |
-| `OPENAI_MODEL` | `onde-kkk` (Onde Inference), `gpt-4o-mini` (other endpoints) | model id when `ONDE_CODE_MODEL` is unset |
-| `ONDE_CODE_MODELS` | listed from `/models` | comma-separated models for the editor's model picker |
-| `ONDE_CODE_YOLO` | unset | `1` or `true` approves every tool call |
-| `ONDE_CODE_COMMAND_TIMEOUT_SECS` | `120` | how long `run_command` may run before it is killed |
-| `ONDE_CODE_DATA_DIR` | the config dir above | where the stored key and `sessions/` live |
-| `ONDE_CODE_CONTEXT_WINDOW` | `128000` | context size reported in `usage_update` |
-| `ONDE_CODE_SURFACE` | `acp` | set to `tui` by the terminal UI |
-| `RUST_LOG` | unset | log filter; logs go to stderr, never stdout |
-
-```
-onde-code [--acp] [--yolo] [--list-models] [--root <path>...] [--login] [--setup] [--version]
-```
-
-## Development
-
-```sh
-cargo test                     # unit, protocol and end-to-end ACP tests
-cargo fmt --check && cargo clippy --all-targets -- -D warnings
-```
-
-The tests start the real binary over stdio and point it at a mock chat completions server, so they
-need no API key or network. `crates/cli/tests/acp_integration.rs` drives the agent with the SDK's `Client`;
-`crates/cli/tests/acp_protocol.rs` sends raw JSON-RPC. CI runs fmt, clippy and the tests on Linux and macOS.
-
-| Path | |
-|------|---|
-| `crates/cli/src/main.rs` | command line: flags, `--login`, `--setup`, `--list-models`, and which mode to run |
-| `crates/cli/src/profile.rs` | the coding agent's prompt, tools and `/models` and `/setup` commands |
-| `crates/cli/src/auth.rs`, `crates/cli/src/browser_auth.rs` | "Sign in with Onde" and `--login`: loopback + PKCE against ondeinference.com/connect |
-| `crates/cli/src/legacy.rs` | moves sessions saved by Onde Code 1.0 into the current store |
-| `packaging/registry/` | the first ACP registry submission; later releases are picked up by the registry |
-
-The ACP server, the chat completions client, the workspace tools, sessions on disk, MCP servers and
-the terminal UI come from the Onde Agent Platform crates
-[`ed-acp`](https://crates.io/crates/ed-acp) and [`ed-acp-tui`](https://crates.io/crates/ed-acp-tui).
-
-Releases are cut by pushing a `v*` tag that matches the version in the root `Cargo.toml` (`[workspace.package]`). The release
-workflow builds all five targets and attaches the archives and `checksums.txt` to the GitHub
-release.
+Issues and pull requests are welcome at
+[ondeinference/onde-code](https://github.com/ondeinference/onde-code). Run
+`cargo fmt --check && cargo clippy --all-targets --locked -- -D warnings && cargo test` before you
+open one. [docs/development.md](docs/development.md) has the layout.
 
 ## License
 
 Apache License 2.0. See [LICENSE](LICENSE).
+
+Copyright © 2026 Onde Inference

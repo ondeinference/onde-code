@@ -77,7 +77,7 @@ the version, builds the five targets, publishes the five
 `@ondeinference/onde-code`. Publishing is skipped for a version that is
 already on npm, so re-running is safe.
 
-Watch the run at `https://github.com/kelvin-soen/OndeCode/actions`.
+Watch the run at `https://github.com/ondeinference/onde-code/actions`.
 
 After both workflows finish, confirm the npm package:
 
