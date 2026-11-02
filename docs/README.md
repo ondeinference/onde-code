@@ -3,7 +3,7 @@
 | Page | What it covers |
 |------|----------------|
 | [Install](install.md) | Release archives, npm and npx, building from source, the ACP registry |
-| [Editor setup](editors.md) | Zed config, signing in from the editor, `AUTH_REQUIRED`, logging out |
+| [Editor setup](editors.md) | Zed, Android Studio, Xcode and marimo setup, signing in from the editor, `AUTH_REQUIRED`, logging out |
 | [What the agent does](acp.md) | Tools, permissions, MCP, prompts, streaming and the limits |
 | [Terminal mode](terminal.md) | The chat UI, its keys, and how it uses ACP |
 | [Models](models.md) | Fine-tuning, managing and deploying models with `onde --mcp` |

@@ -55,7 +55,7 @@ URL. Prefer to paste a key? Run `onde-code --setup`.
 
 ## Use it your way
 
-- **In an editor:** Zed, JetBrains, Xcode, Neovim and other ACP editors run `onde-code --acp`.
+- **In an editor:** Zed, Android Studio and other JetBrains IDEs, Xcode, marimo, Neovim and other ACP clients run `onde-code --acp`.
   See [docs/editors.md](docs/editors.md).
 - **In the terminal:** `onde-code` opens a chat UI that asks before every edit and command. See
   [docs/terminal.md](docs/terminal.md).
