@@ -57,7 +57,8 @@ impl AuthProvider for OndeAuth {
 
         let flow = browser_auth::begin().map_err(|reason| {
             error(format!(
-                "{reason}. Run `{} --setup` in a terminal to paste a key instead.",
+                "{}. Run `{} --setup` in a terminal to paste a key instead.",
+                capitalize(&reason),
                 INFO.name
             ))
         })?;
@@ -78,9 +79,10 @@ impl AuthProvider for OndeAuth {
                 tracing::info!("authenticate: connected {}", describe(&grant));
                 Ok(())
             }
+            // Clients such as Zed add their own "Sign-in did not complete:" lead-in.
             Err(reason) => Err(error(format!(
-                "Sign-in did not complete ({reason}). Try again, or run `{} --setup` in a \
-                 terminal to paste a key.",
+                "{}. Try again, or run `{} --setup` in a terminal to paste a key.",
+                capitalize(&reason),
                 INFO.name
             ))),
         }
@@ -135,6 +137,15 @@ fn describe(grant: &Grant) -> String {
 
 fn error(message: impl Into<String>) -> agent_client_protocol::Error {
     agent_client_protocol::Error::new(ErrorCode::InternalError.into(), message.into())
+}
+
+/// `text` with its first character uppercased.
+fn capitalize(text: &str) -> String {
+    let mut chars = text.chars();
+    match chars.next() {
+        Some(first) => first.to_uppercase().chain(chars).collect(),
+        None => String::new(),
+    }
 }
 
 /// Whether the endpoint accepts the key. `GET /models` checks the key without running a model,
@@ -323,6 +334,17 @@ mod tests {
         let method = OndeAuth.method();
         assert_eq!(&*method.id().0, METHOD_ID);
         assert!(matches!(method, AuthMethod::Agent(_)));
+    }
+
+    #[test]
+    fn capitalize_uppercases_only_the_first_character() {
+        assert_eq!(
+            capitalize("the page was not opened"),
+            "The page was not opened"
+        );
+        assert_eq!(capitalize("Already"), "Already");
+        assert_eq!(capitalize("élan"), "Élan");
+        assert_eq!(capitalize(""), "");
     }
 
     #[test]
