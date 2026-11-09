@@ -11,6 +11,7 @@
 <p align="center">
   <a href="https://ondeinference.com"><img src="https://img.shields.io/badge/ondeinference.com-235843?style=flat-square&labelColor=17211D" alt="Website"></a>
   <a href="https://www.npmjs.com/package/@ondeinference/onde-code"><img src="https://img.shields.io/npm/v/@ondeinference/onde-code?style=flat-square&labelColor=17211D&color=235843" alt="npm"></a>
+  <a href="https://www.nuget.org/packages/Onde.Code"><img src="https://img.shields.io/nuget/v/Onde.Code?style=flat-square&labelColor=17211D&color=235843" alt="NuGet"></a>
   <a href="https://crates.io/crates/onde-code"><img src="https://img.shields.io/crates/v/onde-code?style=flat-square&labelColor=17211D&color=235843" alt="Crates.io"></a>
   <a href="https://github.com/ondeinference/onde-code/releases"><img src="https://img.shields.io/github/v/release/ondeinference/onde-code?style=flat-square&labelColor=17211D&color=235843" alt="Release"></a>
   <a href="https://github.com/ondeinference/onde-code/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/ondeinference/onde-code/ci.yml?style=flat-square&labelColor=17211D&color=235843&label=CI" alt="CI"></a>
@@ -35,6 +36,7 @@ It is one static binary written in Rust, and it also accepts any OpenAI API comp
 
 ```sh
 npm install -g @ondeinference/onde-code    # pulls in the binary for your platform
+dotnet tool install -g Onde.Code           # or as a .NET tool
 npx @ondeinference/onde-code --acp         # or run it without installing, from an editor
 ```
 
