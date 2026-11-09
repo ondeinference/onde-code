@@ -40,6 +40,17 @@ The package bundles the binaries for macOS, Linux and Windows x64, plus macOS an
 so it is larger than the npm packages. There is no Windows arm64 build, and the launcher says so
 when it runs there.
 
+## PyPI
+
+```sh
+pip install onde-code
+```
+
+`uvx onde-code` runs it without a permanent install. The wheels contain only the native binary,
+which lands on your `PATH`; there is no Python module. They cover macOS and Linux on arm64 and
+x64 (glibc 2.28 or newer) and Windows x64. Elsewhere pip falls back to the source distribution,
+which needs a Rust toolchain.
+
 ## winget
 
 ```sh
