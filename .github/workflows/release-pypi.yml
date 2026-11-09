@@ -1,0 +1,230 @@
+name: Code Release PyPI
+
+# Publishes onde-code to PyPI as maturin `bin` wheels (the native binary lands on PATH) plus an
+# sdist, on the same v* tag that release-github.yml, release-npm.yml and release-nuget.yml build from.
+#
+# Auth is PyPI Trusted Publishing (OIDC). pypi.org needs a publisher for this repository and
+# workflow (release-pypi.yml) with no environment; for the first release that is a *pending*
+# publisher, created under Account > Publishing. Without one the publish fails with
+# `invalid-publisher`.
+#
+# Windows arm64 is not built: GitHub's hosted Windows runners provide x64 Python, and maturin
+# refuses to build an arm64 wheel when the interpreter reports win-amd64.
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag (e.g. v1.0.4)"
+        required: true
+
+concurrency:
+  # A re-pushed or re-dispatched tag fires this a second time. Queue the
+  # duplicate behind the original instead of cancelling it: cancelling a run
+  # mid-publish can leave a channel half-uploaded, whereas a queued duplicate
+  # just hits the "already published" check and exits clean.
+  group: ${{ github.workflow }}-${{ github.event.inputs.tag || github.ref_name }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+env:
+  CARGO_TERM_COLOR: always
+  PYPI_PACKAGE: onde-code
+
+jobs:
+  # The wheel's version comes from Cargo.toml, so a tag that disagrees with it would publish a
+  # package that lies about its version.
+  verify-version:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.inputs.tag || github.ref }}
+      - name: Tag matches Cargo.toml
+        shell: bash
+        env:
+          TAG: ${{ github.event.inputs.tag || github.ref_name }}
+        run: |
+          crate=$(sed -n 's/^version = "\(.*\)"/\1/p' Cargo.toml | head -1)
+          if [ "$TAG" != "v$crate" ]; then
+            echo "::error::tag $TAG does not match Cargo.toml version $crate"
+            exit 1
+          fi
+
+  build-wheels:
+    name: Build wheel (${{ matrix.build.NAME }})
+    needs: verify-version
+    runs-on: ${{ matrix.build.OS }}
+    strategy:
+      fail-fast: false
+      matrix:
+        build:
+          - { NAME: darwin-arm64, OS: macos-latest, TARGET: aarch64-apple-darwin }
+          - { NAME: darwin-x64, OS: macos-15-intel, TARGET: x86_64-apple-darwin }
+          - { NAME: linux-x64, OS: ubuntu-latest, TARGET: x86_64-unknown-linux-gnu, MANYLINUX: "2_28" }
+          - { NAME: linux-arm64, OS: ubuntu-24.04-arm, TARGET: aarch64-unknown-linux-gnu, MANYLINUX: "2_28" }
+          - { NAME: windows-x64, OS: windows-latest, TARGET: x86_64-pc-windows-msvc }
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.inputs.tag || github.ref }}
+
+      - name: Set the release version
+        shell: bash
+        run: |
+          if [[ "${GITHUB_REF_TYPE}" == "tag" ]]; then
+            release_version="${GITHUB_REF_NAME#v}"
+          else
+            release_version="${{ github.event.inputs.tag }}"
+            release_version="${release_version#v}"
+          fi
+          echo "RELEASE_VERSION=${release_version}" >> "$GITHUB_ENV"
+
+      - name: Build wheel
+        uses: PyO3/maturin-action@v1
+        with:
+          target: ${{ matrix.build.TARGET }}
+          manylinux: ${{ matrix.build.MANYLINUX || 'off' }}
+          rust-toolchain: stable
+          working-directory: packaging/pypi/onde-code
+          args: --release --locked --compatibility pypi --out dist
+
+      # Install the wheel the way a user would and run it, so a wheel that builds but does not
+      # work never reaches the publish job. The Linux wheels are built in a container but are
+      # installed and run on the host here, which also checks the manylinux baseline holds.
+      - name: Smoke test wheel
+        shell: bash
+        working-directory: packaging/pypi/onde-code
+        run: |
+          python -m venv "${RUNNER_TEMP}/smoke"
+          if [ -d "${RUNNER_TEMP}/smoke/Scripts" ]; then
+            bin_dir="${RUNNER_TEMP}/smoke/Scripts"
+            exe="onde-code.exe"
+          else
+            bin_dir="${RUNNER_TEMP}/smoke/bin"
+            exe="onde-code"
+          fi
+
+          "${bin_dir}/python" -m pip install --no-index --find-links dist onde-code
+
+          reported="$("${bin_dir}/${exe}" --version)"
+          echo "onde-code --version: ${reported}"
+          case "${reported}" in
+            *"${RELEASE_VERSION}"*) ;;
+            *)
+              echo "::error::binary reports '${reported}', expected ${RELEASE_VERSION}"
+              exit 1
+              ;;
+          esac
+
+          if "${bin_dir}/python" -m zipfile -l dist/*.whl | grep -F fake-mcp-server; then
+            echo "::error::the wheel contains the test-only fake-mcp-server"
+            exit 1
+          fi
+
+          echo "BIN_DIR=${bin_dir}" >> "$GITHUB_ENV"
+          echo "EXE=${exe}" >> "$GITHUB_ENV"
+
+      # The exe must not import the VC++ runtime DLLs (see .cargo/config.toml), or it fails to
+      # load on a machine without the redistributable.
+      - name: Check static CRT
+        if: matrix.build.NAME == 'windows-x64'
+        shell: pwsh
+        run: ./packaging/windows/check-static-crt.ps1 -Path "$env:BIN_DIR/$env:EXE"
+
+      - name: Upload wheel artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: wheels-${{ matrix.build.NAME }}
+          path: packaging/pypi/onde-code/dist/*
+
+  build-sdist:
+    name: Build source distribution
+    needs: verify-version
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.inputs.tag || github.ref }}
+
+      - name: Build sdist
+        uses: PyO3/maturin-action@v1
+        with:
+          command: sdist
+          rust-toolchain: stable
+          working-directory: packaging/pypi/onde-code
+          args: --out dist
+
+      - name: Upload sdist artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sdist
+          path: packaging/pypi/onde-code/dist/*
+
+  # needs both build jobs, so one failed target means nothing is published.
+  publish-pypi:
+    name: Publish to PyPI
+    runs-on: ubuntu-latest
+    needs:
+      - build-wheels
+      - build-sdist
+    # Trusted Publishing exchanges this OIDC token for a short-lived PyPI token, so no API token
+    # is stored. Only this job gets id-token.
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Set the release version
+        shell: bash
+        run: |
+          if [[ "${GITHUB_REF_TYPE}" == "tag" ]]; then
+            release_version="${GITHUB_REF_NAME#v}"
+          else
+            release_version="${{ github.event.inputs.tag }}"
+            release_version="${release_version#v}"
+          fi
+          echo "RELEASE_VERSION=${release_version}" >> "$GITHUB_ENV"
+
+      - name: Download distribution artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: "{wheels-*,sdist}"
+          path: dist
+          merge-multiple: true
+
+      - name: Check whether release already exists on PyPI
+        id: pypi-check
+        shell: bash
+        run: |
+          # Branch on the status instead of `curl -f`: a failed fetch must not read as "not
+          # published yet". A 404 means this version (or the project) is not on PyPI.
+          STATUS=$(curl -sS -o /dev/null -w '%{http_code}' \
+            --retry 3 --retry-delay 2 --retry-all-errors \
+            "https://pypi.org/pypi/${PYPI_PACKAGE}/${RELEASE_VERSION}/json")
+
+          case "$STATUS" in
+            200)
+              echo "${PYPI_PACKAGE} ${RELEASE_VERSION} already exists on PyPI, skipping publish"
+              echo "exists=true" >> "$GITHUB_OUTPUT"
+              ;;
+            404)
+              echo "${PYPI_PACKAGE} ${RELEASE_VERSION} is not on PyPI yet, publishing"
+              echo "exists=false" >> "$GITHUB_OUTPUT"
+              ;;
+            *)
+              echo "Unexpected ${STATUS} from PyPI while checking whether ${PYPI_PACKAGE} ${RELEASE_VERSION} is published" >&2
+              exit 1
+              ;;
+          esac
+
+      - name: Publish distribution
+        if: steps.pypi-check.outputs.exists != 'true'
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          skip-existing: true
