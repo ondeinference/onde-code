@@ -30,6 +30,16 @@ install:
 npx @ondeinference/onde-code --acp
 ```
 
+## NuGet (.NET tool)
+
+```sh
+dotnet tool install --global Onde.Code
+```
+
+The package bundles the binaries for macOS, Linux and Windows x64, plus macOS and Linux arm64,
+so it is larger than the npm packages. There is no Windows arm64 build, and the launcher says so
+when it runs there.
+
 ## winget
 
 ```sh
