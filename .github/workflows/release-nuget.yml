@@ -255,10 +255,25 @@ jobs:
           } | Select-Object -First 1
 
           if (-not $nativeBinary) {
-            Write-Error "The onde-code native binary for ${runtimeIdentifier} was not bundled in the installed .NET tool package."
+            throw "The onde-code native binary for ${runtimeIdentifier} was not bundled in the installed .NET tool package."
           }
 
           Write-Host "Found bundled native binary at $($nativeBinary.FullName)"
+
+      # Finding the file proves it was packed, not that it loads. Running it catches a missing
+      # runtime DLL or a glibc mismatch before the package is published.
+      - name: Run the installed tool
+        shell: pwsh
+        run: |
+          $tool = if ($IsWindows) { ".tool/onde-code.exe" } else { ".tool/onde-code" }
+          $output = & $tool --version
+          if ($LASTEXITCODE -ne 0) {
+            throw "onde-code --version exited with code $LASTEXITCODE"
+          }
+          Write-Host $output
+          if (($output -join " ") -notmatch [regex]::Escape($env:RELEASE_VERSION)) {
+            throw "onde-code --version did not report $env:RELEASE_VERSION"
+          }
 
   publish-nuget:
     name: Publish to NuGet
