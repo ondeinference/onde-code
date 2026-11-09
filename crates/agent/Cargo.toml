@@ -1,6 +1,6 @@
 [package]
 name = "onde-code-agent"
-version = "1.1.1"
+version = "1.1.2"
 edition.workspace = true
 description = "Onde Code as an embeddable ed-acp agent: the Profile, its Onde sign-in and the browser flow."
 license.workspace = true
