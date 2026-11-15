@@ -17,6 +17,13 @@ path = "src/main.rs"
 [[bin]]
 name = "fake-mcp-server"
 path = "src/bin/fake_mcp_server.rs"
+required-features = ["test-binaries"]
+
+# On by default so `cargo test` builds the fake MCP server the integration tests spawn. The PyPI
+# build turns default features off so maturin does not package it.
+[features]
+default = ["test-binaries"]
+test-binaries = []
 
 [dependencies]
 ed-acp.workspace = true

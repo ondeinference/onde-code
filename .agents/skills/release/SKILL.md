@@ -77,13 +77,24 @@ the version, builds the five targets, publishes the five
 `@ondeinference/onde-code`. Publishing is skipped for a version that is
 already on npm, so re-running is safe.
 
+`release-pypi.yml` ("Code Release PyPI") also triggers on the tag: it builds
+maturin wheels for the five targets plus an sdist, smoke-tests each wheel
+(`onde-code --version` must match the tag), and publishes only if every build
+passed. A version already on PyPI is skipped, so re-running is safe.
+
 Watch the run at `https://github.com/ondeinference/onde-code/actions`.
 
-After both workflows finish, confirm the npm package:
+After the workflows finish, confirm the npm and PyPI packages:
 
 ```sh
 npm view @ondeinference/onde-code version
+curl -s https://pypi.org/pypi/onde-code/json | python3 -c 'import json,sys; print(json.load(sys.stdin)["info"]["version"])'
 ```
+
+PyPI uses Trusted Publishing too. The project needs a publisher for this repo
+and `release-pypi.yml` (environment blank) on pypi.org, under Account →
+Publishing as a pending publisher until the first release creates the project.
+Without it the publish step fails with `invalid-publisher`.
 
 A new package needs a Trusted Publisher before its first CI publish. Run
 `packaging/npm/scripts/setup-trusted-publishing.sh` (as an `@ondeinference` org
