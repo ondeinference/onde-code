@@ -138,7 +138,7 @@ jobs:
         run: ./packaging/windows/check-static-crt.ps1 -Path "$env:BIN_DIR/$env:EXE"
 
       - name: Upload wheel artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: wheels-${{ matrix.build.NAME }}
           path: packaging/pypi/onde-code/dist/*
@@ -162,7 +162,7 @@ jobs:
           args: --out dist
 
       - name: Upload sdist artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: sdist
           path: packaging/pypi/onde-code/dist/*
@@ -192,7 +192,7 @@ jobs:
           echo "RELEASE_VERSION=${release_version}" >> "$GITHUB_ENV"
 
       - name: Download distribution artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           pattern: "{wheels-*,sdist}"
           path: dist
